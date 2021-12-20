@@ -313,7 +313,7 @@
                             </header>
                             <div class="card">
                                 <div class="card-body"><label class="form-label">ISBN</label>
-                                    <div><input type="text"><button class="btn btn-primary" type="button">Rederve</button></div>
+                                    <div><input type="text" id="ISBNReserve"><button class="btn btn-primary" onclick="reserveBook()" type="button">Reserve</button></div>
                                 </div>
                             </div>
                             <header>
@@ -321,7 +321,7 @@
                             </header>
                             <div class="card">
                                 <div class="card-body"><label class="form-label">ISBN</label>
-                                    <div><input type="text"><button class="btn btn-primary" type="button">Return</button></div>
+                                    <div><input id="barcodeReturn" type="text"><button class="btn btn-primary" onclick="returnBook()" type="button">Return</button></div>
                                 </div>
                             </div>
                             <header>
@@ -329,7 +329,7 @@
                             </header>
                             <div class="card">
                                 <div class="card-body"><label class="form-label">BOOK NAME</label>
-                                    <div><input type="text"></div><button class="btn btn-primary" type="button">Renew</button>
+                                    <div><input id="barcodeRenew" type="text"></div><button class="btn btn-primary" onclick="renewBook()" type="button">Renew</button>
                                 </div>
                             </div>
                         </div>

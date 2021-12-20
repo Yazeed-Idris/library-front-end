@@ -54,7 +54,7 @@ async function addBook() {
 
     const bookItem = {
         state: true,
-        bookId: parseInt(document.getElementById('ISBN').value), // needs revision
+        book: parseInt(document.getElementById('ISBN').value), // needs revision
     }
 
     console.log(parseInt(document.getElementById('ISBN').value));
@@ -63,10 +63,10 @@ async function addBook() {
         title: document.getElementById('title').value,
         subject: document.getElementById('subject').value,
         publicationDate: document.getElementById('publicationDate').value,
-        authorPersonId: document.getElementById('author').value,
+        author: parseInt(document.getElementById('author').value),
     }
 
-    fetch(baseUrl + '/librarian/book', {
+    await fetch(baseUrl + '/librarian/book', {
         method: 'POST',
         body: JSON.stringify(book),
         headers: {
@@ -159,8 +159,62 @@ function deleteMember() {
 
 function borrowBook() {
     const ISBN = parseInt(document.getElementById('ISBNBorrow').value);
+    const memberId = parseInt(JSON.parse(window.sessionStorage.getItem('memberInfo'))['personId']);
 
-    fetch(baseUrl + '/member/borrow/' + ISBN, {
+    fetch(baseUrl + '/member/borrow/' + ISBN + '/' + memberId, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(function (response){
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+        });
+}
+
+function reserveBook() {
+    const ISBN = parseInt(document.getElementById('ISBNReserve').value);
+    const memberId = parseInt(JSON.parse(window.sessionStorage.getItem('memberInfo'))['personId']);
+
+    fetch(baseUrl + '/member/reserve/' + ISBN + '/' + memberId, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(function (response){
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+        });
+}
+
+function renewBook() {
+    const barcode = parseInt(document.getElementById('barcodeRenew').value);
+
+    fetch(baseUrl + '/member/renew/' + barcode, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(function (response){
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+        });
+}
+
+function returnBook() {
+    const memberId = parseInt(JSON.parse(window.sessionStorage.getItem('memberInfo'))['personId']);
+    const barcode = parseInt(document.getElementById('barcodeReturn').value);
+
+    fetch(baseUrl + '/member/return/' + barcode + '/' + memberId, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json; charset=UTF-8"
