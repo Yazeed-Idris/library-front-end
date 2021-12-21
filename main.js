@@ -338,5 +338,43 @@ function logout() {
     window.sessionStorage.setItem('memberInfo', JSON.stringify({}));
 }
 
+async function registerAccount() {
+    const account = {
+        personId: parseInt(document.getElementById('id').value),
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+    }
+
+    if (document.getElementById('registrationOption').value === 'librarian') {
+        await fetch(baseUrl + '/librarian/librarian', {
+            method: 'POST',
+            body: JSON.stringify(account),
+            headers: {
+                "Content-Type": "application/json; charset=UTF-8"
+            }
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                console.log(data);
+            });
+    } else {
+        await fetch(baseUrl + '/librarian/author', {
+            method: 'POST',
+            body: JSON.stringify(account),
+            headers: {
+                "Content-Type": "application/json; charset=UTF-8"
+            }
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                console.log(data);
+            });
+    }
+}
+
 loadLibraryBooks();
 loadMemberBooks();
