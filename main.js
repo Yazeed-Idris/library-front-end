@@ -104,7 +104,7 @@ function deleteBook() {
     fetch(baseUrl + '/librarian/book/' + deleteBookISBN, {
         method: 'DELETE',
     })
-        .then(function (response){
+        .then(function (response) {
             return response.json();
         })
         .then(function (data) {
@@ -133,7 +133,7 @@ function addMember() {
             "Content-Type": "application/json; charset=UTF-8"
         }
     })
-        .then(function (response){
+        .then(function (response) {
             return response.json();
         })
         .then(function (data) {
@@ -144,12 +144,12 @@ function addMember() {
 function deleteMember() {
     const memberId = document.getElementById('memberIdDelete').value;
 
-    fetch(baseUrl+'/librarian/member/' + memberId, {
+    fetch(baseUrl + '/librarian/member/' + memberId, {
         method: 'DELETE',
         headers: {
             "Content-Type": "application/json; charset=UTF-8"
         }
-    }).then(function (response){
+    }).then(function (response) {
         return response.json();
     })
         .then(function (data) {
@@ -157,22 +157,23 @@ function deleteMember() {
         });
 }
 
-function borrowBook() {
+async function borrowBook() {
     const ISBN = parseInt(document.getElementById('ISBNBorrow').value);
     const memberId = parseInt(JSON.parse(window.sessionStorage.getItem('memberInfo'))['personId']);
 
-    fetch(baseUrl + '/member/borrow/' + ISBN + '/' + memberId, {
+    await fetch(baseUrl + '/member/borrow/' + ISBN + '/' + memberId, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json; charset=UTF-8"
         }
     })
-        .then(function (response){
+        .then(function (response) {
             return response.json();
         })
         .then(function (data) {
             console.log(data);
         });
+    location.reload();
 }
 
 function reserveBook() {
@@ -185,7 +186,7 @@ function reserveBook() {
             "Content-Type": "application/json; charset=UTF-8"
         }
     })
-        .then(function (response){
+        .then(function (response) {
             return response.json();
         })
         .then(function (data) {
@@ -202,7 +203,7 @@ function renewBook() {
             "Content-Type": "application/json; charset=UTF-8"
         }
     })
-        .then(function (response){
+        .then(function (response) {
             return response.json();
         })
         .then(function (data) {
@@ -210,24 +211,132 @@ function renewBook() {
         });
 }
 
-function returnBook() {
+async function returnBook() {
     const memberId = parseInt(JSON.parse(window.sessionStorage.getItem('memberInfo'))['personId']);
     const barcode = parseInt(document.getElementById('barcodeReturn').value);
 
-    fetch(baseUrl + '/member/return/' + barcode + '/' + memberId, {
+    await fetch(baseUrl + '/member/return/' + barcode + '/' + memberId, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json; charset=UTF-8"
         }
     })
-        .then(function (response){
+        .then(function (response) {
             return response.json();
         })
         .then(function (data) {
             console.log(data);
         });
+    location.reload();
 }
 
-function logout() {
-    // logout
+async function loadMemberBooks() {
+    let booksView = document.getElementById('memberBooksView');
+    booksView.innerHTML = '';
+    const memberId = parseInt(JSON.parse(window.sessionStorage.getItem('memberInfo'))['personId']);
+
+    let booksArray = [];
+
+    await fetch(baseUrl + '/member/books/' + memberId, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+            booksArray = data;
+        });
+
+    for (let i = 0; i < booksArray.length; i++) {
+        booksView.innerHTML += `
+        <tr>
+      <th scope="row">${i+1}</th>
+      <td>${booksArray[i].ISBN}</td>
+      <td>${booksArray[i].TITLE}</td>
+      <td>${booksArray[i].NAME}</td>
+      <td>${booksArray[i].BARCODE}</td>
+    </tr>
+        `
+    }
 }
+
+async function loadLibraryBooks() {
+    const booksView = document.getElementById('booksView');
+    booksView.innerHTML = '';
+
+    let booksArray = [];
+
+    await fetch(baseUrl + '/librarian/books/all',  {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+            booksArray = data;
+        });
+
+    for (let i = 0; i < booksArray.length; i++) {
+        booksView.innerHTML += `
+        <tr>
+      <td>${booksArray[i].ISBN}</td>
+      <td>${booksArray[i].title}</td>
+      <td>${booksArray[i].subject}</td>
+      <td>${booksArray[i].publicationDate}</td>
+    </tr>
+        `
+    }
+}
+
+async function searchBooks() {
+    const value = document.getElementById('searchValue').value;
+    const searchType = document.getElementById('searchType').value;
+
+    let booksArray = [];
+
+    await fetch(baseUrl + '/member/books?searchCondition=' + searchType + '&value=' + value,  {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+            booksArray = data;
+        });
+
+    const searchView = document.getElementById('searchView');
+    searchView.innerHTML = '';
+
+
+    for (let i = 0; i < booksArray.length; i++) {
+        searchView.innerHTML += `
+        <tr>
+      <td>${booksArray[i].ISBN}</td>
+      <td>${booksArray[i].title}</td>
+      <td>${booksArray[i].subject}</td>
+      <td>${booksArray[i].publicationDate}</td>
+    </tr>
+        `
+    }
+}
+
+
+function logout() {
+    window.sessionStorage.setItem('librarianInfo', JSON.stringify({}));
+    window.sessionStorage.setItem('memberInfo', JSON.stringify({}));
+}
+
+loadLibraryBooks();
+loadMemberBooks();
