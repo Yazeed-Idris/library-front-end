@@ -222,7 +222,7 @@ async function returnBook() {
         }
     })
         .then(function (response) {
-            return response.json();
+            // return response.json();
         })
         .then(function (data) {
             console.log(data);
@@ -232,6 +232,8 @@ async function returnBook() {
 
 async function loadMemberBooks() {
     let booksView = document.getElementById('memberBooksView');
+    if (!booksView)
+        return;
     booksView.innerHTML = '';
     const memberId = parseInt(JSON.parse(window.sessionStorage.getItem('memberInfo'))['personId']);
 
@@ -265,7 +267,9 @@ async function loadMemberBooks() {
 }
 
 async function loadLibraryBooks() {
-    const booksView = document.getElementById('booksView');
+    const booksView = document.getElementById('searchView');
+    if (!booksView)
+        return;
     booksView.innerHTML = '';
 
     let booksArray = [];
@@ -291,6 +295,149 @@ async function loadLibraryBooks() {
       <td>${booksArray[i].title}</td>
       <td>${booksArray[i].subject}</td>
       <td>${booksArray[i].publicationDate}</td>
+    </tr>
+        `
+    }
+}
+
+async function loadInactiveMembers() {
+    const view = document.getElementById('inactiveMembers');
+    if (!view)
+        return;
+    view.innerHTML = '';
+
+    let array = [];
+
+    await fetch(baseUrl + '/librarian/members/inactive',  {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+            array = data;
+        });
+
+
+
+    for (let i = 0; i < array.length; i++) {
+        view.innerHTML += `
+        <tr>
+      <td>${array[i]['PERSON_ID']}</td>
+      <td>${array[i]['NAME']}</td>
+      <td>${array[i]['PHONE']}</td>
+      <td>${array[i]['MEMBER_BARCODE']}</td>
+    </tr>
+        `
+    }
+}
+
+async function loadLateMembers() {
+    const view = document.getElementById('lateMembersView');
+    if (!view)
+        return;
+    view.innerHTML = '';
+
+    let array = [];
+
+    await fetch(baseUrl + '/librarian/members/late',  {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+            array = data;
+        });
+
+
+
+    for (let i = 0; i < array.length; i++) {
+        view.innerHTML += `
+        <tr>
+      <td>${array[i]['PERSON_ID']}</td>
+      <td>${array[i]['NAME']}</td>
+      <td>${array[i]['PHONE']}</td>
+      <td>${array[i]['MEMBER_BARCODE']}</td>
+    </tr>
+        `
+    }
+}
+
+async function loadPenalties() {
+    const view = document.getElementById('penaltiesView');
+    if (!view)
+        return;
+    view.innerHTML = '';
+
+    let array = [];
+
+    await fetch(baseUrl + '/librarian/members/penalties',  {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+            array = data;
+        });
+
+
+
+    for (let i = 0; i < array.length; i++) {
+        view.innerHTML += `
+        <tr>
+      <td>${array[i]['MEMBER_NAME']}</td>
+      <td>${array[i]['PENALTY_AMOUNT']}</td>
+      <td>${array[i]['MEMBER_ID']}</td>
+    </tr>
+        `
+    }
+}
+
+async function loadOutstandingMembers() {
+    const view = document.getElementById('outstandingMembersView');
+    if (!view)
+        return;
+    view.innerHTML = '';
+
+    let array = [];
+
+    await fetch(baseUrl + '/librarian/members/outstanding',  {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+            array = data;
+        });
+
+
+
+    for (let i = 0; i < array.length; i++) {
+        view.innerHTML = `
+        <tr>
+      <td>${array[i]['PERSON_ID']}</td>
+      <td>${array[i]['NAME']}</td>
+      <td>${array[i]['PHONE']}</td>
+      <td>${array[i]['MEMBER_BARCODE']}</td>
     </tr>
         `
     }
@@ -376,5 +523,9 @@ async function registerAccount() {
     }
 }
 
-loadLibraryBooks();
-loadMemberBooks();
+loadInactiveMembers().then();
+loadLibraryBooks().then();
+loadMemberBooks().then();
+loadLateMembers().then();
+loadPenalties().then();
+loadOutstandingMembers().then();
